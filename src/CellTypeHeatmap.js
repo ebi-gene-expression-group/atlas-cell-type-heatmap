@@ -3,13 +3,11 @@ import PropTypes from 'prop-types'
 
 import URI from 'urijs'
 import _ from "lodash"
-import HighchartsHeatmap from "./HighchartsHeatmap"
 
-const fetchResponseJson = async url => {
-  const response = await fetch(url)
-  const responseJson = await response.json()
-  return responseJson
-}
+import HighchartsHeatmap from "./HighchartsHeatmap"
+import CalloutAlert from './CalloutAlert'
+import LoadingOverlay from './LoadingOverlay'
+
 
 class CellTypeHeatmap extends React.Component {
   constructor(props) {
@@ -23,43 +21,48 @@ class CellTypeHeatmap extends React.Component {
     }
   }
 
-  _fetchExpressionDataForHeatmap({resource, host}) {
-    const expressionByCellTypeDataUrl = URI(resource, host).toString()
+  async _fetchExpressionDataForHeatmap({resource, host}) {
+    this.setState({
+      isLoading: true
+    })
+
     //  `http://localhost:8080/gxa/sc/json/experiments/celltype/name/organism_part/value/pancreas`
     // "https://gist.githubusercontent.com/lingyun1010/095f414db81d34cef2a3bc8eaf56544f/raw/e898dd2ce08fb427e929df6c8dac262920f244a7/cellTypeAPIJsonResponse.json"
 
-    this.setState(
-      {
-        loading: true
-      },
-      () => {
+    const url = URI(resource, host).toString()
 
-        fetchResponseJson(expressionByCellTypeDataUrl)
-          .then(responseJson => {
-            const results = responseJson.markerGeneExpressionByCellType
-            const experimentAccessions = Object.keys(results)
-            const markerGenes = _.flatMap(experimentAccessions.map(accession => Object.keys(results[accession])))
-            const cellTypes = _.flatMap(experimentAccessions.map(accession =>
-              Object.keys(results[accession][Object.keys(results[accession])[0]])))
+    try {
+      const response = await fetch(url)
 
-            this.setState({
-              experimentAccession: Object.keys(results),
-              expressionByCellTypeData: responseJson,
-              responseByAccession: results,
-              axisData: this._heatmapAxis(experimentAccessions, cellTypes, markerGenes),
-              heatmapData:  this._factorHeatmapData(markerGenes, results, cellTypes),
-              loading: false
-            })
-          })
-          .catch(reason => {
-            console.error(`Oh no`, reason)
-            this.setState({
-              loading: false
-            })
-          })
-
+      if (!response.ok) {
+        throw new Error(`${url} => ${response.status}`)
       }
-    )
+
+      const results = Object.values(await response.json())[0]
+      const experimentAccessions = Object.keys(results)
+      const markerGenes = _.flatMap(experimentAccessions.map(accession => Object.keys(results[accession])))
+      const cellTypes = _.flatMap(experimentAccessions.map(accession =>
+        Object.keys(results[accession][Object.keys(results[accession])[0]])))
+      this.setState({
+        experimentAccession: Object.keys(results),
+        expressionByCellTypeData: response,
+        responseByAccession: results,
+        axisData: this._heatmapAxis(experimentAccessions, cellTypes, markerGenes),
+        heatmapData:  this._factorHeatmapData(markerGenes, results, cellTypes),
+        isLoading: false
+      })
+
+    } catch(e) {
+      this.setState({
+        data: null,
+        isLoading: false,
+        hasError: {
+          description: `There was a problem communicating with the server. Please try again later.`,
+          name: e.name,
+          message: e.message
+        }
+      })
+    }
   }
 
   _factorHeatmapData(markerGenes, results, cellTypes) {
@@ -106,14 +109,19 @@ class CellTypeHeatmap extends React.Component {
   }
 
   render() {
-    const { heatmapData, axisData } = this.state
+    const { heatmapData, axisData, hasError, isLoading } = this.state
 
     return (
-      <div className="row">
-        <div className="sections large-9 columns">
-          <HighchartsHeatmap axisData={axisData} heatmapData={heatmapData} />
+      hasError ?
+        <CalloutAlert error={hasError}/> :
+        <div className="row">
+          <div className="sections large-9 columns">
+            <HighchartsHeatmap axisData={axisData} heatmapData={heatmapData} />
+          </div>
+          <LoadingOverlay
+            show={isLoading}
+          />
         </div>
-      </div>
     )
   }
 }

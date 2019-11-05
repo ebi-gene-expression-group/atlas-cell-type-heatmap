@@ -35,7 +35,7 @@ const HighchartsHeatmap = props => {
       step: 1
     },
     title: {
-      text: `Heatmap for Cell types vs marker genes`
+      text: `Heatmap for cell types vs marker genes`
     },
 
     xAxis: {
@@ -55,10 +55,14 @@ const HighchartsHeatmap = props => {
     tooltip: {
       formatter: function () {
         if(this.point.value === null) {
-          return `<b>Cell Type:</b> ${this.series.xAxis.categories[this.point.x]} <br/> <b>Gene ID:</b> ${this.series.yAxis.categories[this.point.y]} <br /> <b>Average expression:</b> Not expressed <br/>`
+          return `<b>Cell Type:</b> ${this.series.xAxis.categories[this.point.x]} <br/> 
+                  <b>Gene ID:</b> ${this.series.yAxis.categories[this.point.y]} <br /> 
+                  <b>Average expression:</b> Not expressed <br/>`
         }
         else {
-          return `<b>Cell Type:</b> ${this.series.xAxis.categories[this.point.x]} <br/> <b>Gene ID:</b> ${this.series.yAxis.categories[this.point.y]} <br /> <b>Average expression:</b> ${Math.round(this.point.value-1)} TPM <br/>`
+          return `<b>Cell Type:</b> ${this.series.xAxis.categories[this.point.x]} <br/> 
+                  <b>Gene ID:</b> ${this.series.yAxis.categories[this.point.y]} <br /> 
+                  <b>Average expression:</b> ${Math.round(this.point.value-1)} CPM <br/>`
         }
       }
     },
@@ -94,18 +98,13 @@ const HighchartsHeatmap = props => {
     ]
   }
 
-  return (
-    !props.loading && (
-      <HighchartsReact highcharts={Highcharts} options={options} />
-    )
-  )
+  return <HighchartsReact highcharts={Highcharts} options={options} />
 }
-
 
 HighchartsHeatmap.propTypes = {
   axisData: PropTypes.shape({
-    x: PropTypes.array,
-    y: PropTypes.array
+    y: PropTypes.array,
+    x: PropTypes.array
   }).isRequired,
   heatmapData: PropTypes.array.isRequired
 }

@@ -37,6 +37,7 @@
     "url": "https://github.com/ebi-gene-expression-group/atlas-cell-type-heatmap.git"
   },
   "dependencies": {
+    "file-loader": "^4.2.0",
     "highcharts": "^7.2.1",
     "highcharts-react-official": "^2.2.2",
     "lodash": "^4.17.15",

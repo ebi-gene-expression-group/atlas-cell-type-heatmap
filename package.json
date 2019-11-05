@@ -28,6 +28,7 @@
   },
   "author": "Expression Atlas developers <arrayexpress-atlas@ebi.ac.uk>",
   "collaborators": [
+    "Lingyun Zhao <lingyun@ebi.ac.uk>",
     "Alfonso Muñoz-Pomer Fuentes <amunoz@ebi.ac.uk>"
   ],
   "license": "Apache-2.0",
@@ -36,10 +37,14 @@
     "url": "https://github.com/gxa/my-package.git"
   },
   "dependencies": {
+    "highcharts": "^7.2.1",
+    "highcharts-react-official": "^2.2.2",
+    "lodash": "^4.17.15",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "styled-components": "^4.2.0",
+    "uri-js": "^4.2.2",
     "urijs": "^1.19.1"
   },
   "devDependencies": {

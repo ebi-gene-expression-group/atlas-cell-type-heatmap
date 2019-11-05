@@ -6,7 +6,7 @@ const vendorsBundleName = `vendors`
 
 module.exports = {
   entry: {
-    myPackageDemo: [`@babel/polyfill`, `./html/render.js`],
+    cellTypeHeatmap: [`@babel/polyfill`, `./html/render.js`],
   },
 
   plugins: [

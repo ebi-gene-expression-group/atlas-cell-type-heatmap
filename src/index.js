@@ -1,1 +1,1 @@
-export { default } from './CellTypeHeatmap.js'
+export { default } from './CellTypeHeatmap'

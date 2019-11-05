@@ -103,8 +103,11 @@ const HighchartsHeatmap = props => {
 
 
 HighchartsHeatmap.propTypes = {
-  axisData: PropTypes.Object.isRequired,
-  heatmapData: PropTypes.Array.isRequired
+  axisData: PropTypes.shape({
+    x: PropTypes.array,
+    y: PropTypes.array
+  }).isRequired,
+  heatmapData: PropTypes.array.isRequired
 }
 
 export default HighchartsHeatmap

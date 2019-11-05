@@ -1,7 +1,7 @@
 import React from "react"
 import PropTypes from 'prop-types'
 
-import URI from "uri-js"
+import URI from 'urijs'
 import _ from "lodash"
 import HighchartsHeatmap from "./HighchartsHeatmap"
 
@@ -10,8 +10,6 @@ const fetchResponseJson = async url => {
   const responseJson = await response.json()
   return responseJson
 }
-
-//const average = arr => arr.reduce((sume, el) => sume + el, 0) / arr.length;
 
 class CellTypeHeatmap extends React.Component {
   constructor(props) {
@@ -25,8 +23,8 @@ class CellTypeHeatmap extends React.Component {
     }
   }
 
-  _fetchExpressionDataForHeatmap() {
-    const expressionByCellTypeDataUrl = URI(this.props.host, this.props.resource)
+  _fetchExpressionDataForHeatmap({resource, host}) {
+    const expressionByCellTypeDataUrl = URI(resource, host).toString()
     //  `http://localhost:8080/gxa/sc/json/experiments/celltype/name/organism_part/value/pancreas`
     // "https://gist.githubusercontent.com/lingyun1010/095f414db81d34cef2a3bc8eaf56544f/raw/e898dd2ce08fb427e929df6c8dac262920f244a7/cellTypeAPIJsonResponse.json"
 
@@ -41,7 +39,8 @@ class CellTypeHeatmap extends React.Component {
             const results = responseJson.markerGeneExpressionByCellType
             const experimentAccessions = Object.keys(results)
             const markerGenes = _.flatMap(experimentAccessions.map(accession => Object.keys(results[accession])))
-            const cellTypes = _.flatMap(experimentAccessions.map(accession => Object.keys(results[accession][Object.keys(results[accession])[0]])))
+            const cellTypes = _.flatMap(experimentAccessions.map(accession =>
+              Object.keys(results[accession][Object.keys(results[accession])[0]])))
 
             this.setState({
               experimentAccession: Object.keys(results),
@@ -83,22 +82,35 @@ class CellTypeHeatmap extends React.Component {
         )
       )
     )
-    return ({ y:  markerGenes, x:   yAxisCategory })
+    return ({ y: markerGenes, x: yAxisCategory })
   }
 
   componentDidMount() {
-    this._fetchExpressionDataForHeatmap()
+    this._fetchExpressionDataForHeatmap(this.props)
+  }
+
+  componentDidUpdate(previousProps) {
+    if (previousProps.resource !== this.props.resource) {
+      this._fetchExpressionDataForHeatmap(this.props)
+    }
+  }
+
+  componentDidCatch(error, info) {
+    this.setState({
+      hasError: {
+        description: `There was a problem rendering this component.`,
+        name: error.name,
+        message: `${error.message} – ${info}`
+      }
+    })
   }
 
   render() {
-    const {heatmapData, axisData } = this.state
+    const { heatmapData, axisData } = this.state
 
     return (
       <div className="row">
         <div className="sections large-9 columns">
-          <h2>
-            Cell type visualisations for characteristic_name:organism_part AND characteristic_value:pancreas
-          </h2>
           <HighchartsHeatmap axisData={axisData} heatmapData={heatmapData} />
         </div>
       </div>

@@ -81,7 +81,7 @@ class CellTypeHeatmap extends React.Component {
     const yAxisCategory = _.flatMap(
       experimentAccessions.map(experimentAccession =>
         cellTypes.map(
-          cellType => `${cellType}/${experimentAccession}`
+          cellType => `${cellType} <br> ${experimentAccession}`
         )
       )
     )
@@ -115,9 +115,7 @@ class CellTypeHeatmap extends React.Component {
       hasError ?
         <CalloutAlert error={hasError}/> :
         <div className="row">
-          <div className="sections large-9 columns">
-            <HighchartsHeatmap axisData={axisData} heatmapData={heatmapData} />
-          </div>
+          <HighchartsHeatmap axisData={axisData} heatmapData={heatmapData} />
           <LoadingOverlay
             show={isLoading}
           />

@@ -26,7 +26,9 @@ const HighchartsHeatmap = props => {
     chart: {
       type: `heatmap`,
       zoomType: `y`,
-      height: props.axisData.y && props.axisData.y.length*20
+      height: props.axisData.y && props.axisData.y.length*20,
+      width: props.axisData.x && props.axisData.x.length*100
+
     },
     credits: {
       enabled: false
@@ -40,7 +42,9 @@ const HighchartsHeatmap = props => {
 
     xAxis: {
       categories: props.axisData.x,
-      opposite: true
+      opposite: true,
+      labels: {
+        autoRotation: [-20]}
     },
 
     yAxis: {
@@ -50,6 +54,11 @@ const HighchartsHeatmap = props => {
       },
       title: false,
       reversed: true,
+      startOnTick: false,
+      endOnTick: false,
+      gridLineWidth: 0,
+      minorGridLineWidth: 0,
+      showEmpty: false
     },
 
     tooltip: {

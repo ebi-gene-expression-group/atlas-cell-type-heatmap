@@ -45,8 +45,4 @@ describe(`CellTypeHeatmap`, () => {
       })
   })
 
-  it(`matches snapshot`, () => {
-    const tree = renderer.create(<CellTypeHeatmap {...validProps} />).toJSON()
-    expect(tree).toMatchSnapshot()
-  })
 })

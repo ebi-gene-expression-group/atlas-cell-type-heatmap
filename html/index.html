@@ -12,6 +12,18 @@
 
 <body>
 <div id="wrapper" class="row">
+    <div class="small-12 columns">
+        <form action="update()">
+            Charateristic name:<br>
+            <input type="text" title="charateristic name" id="name" value="organism_part" />
+            <br>
+            Charateristic value:<br>
+            <input type="text" title="charateristic value" id="value" value="pancreas" />
+        </form>
+        <button class="button" onclick="update()">Render</button>
+
+    </div>
+
     <div id="content" class="small-12 columns">
         <div id="target">
         </div>
@@ -24,10 +36,16 @@
 
 <!-- Set to http://localhost:8080/gxa/ or http://localhost:8080/gxa_sc/ -- Remember the trailing slash! -->
 <script>
-    cellTypeHeatmap.render({
-      host: 'http://localhost:8080/gxa/sc/',
-      resource: 'json/experiments/celltype/name/organism_part/value/pancreas'
-    }, 'target')
+    function update(){
+        var charactName = document.getElementById("name").value
+        var charactValue = document.getElementById("value").value
+        cellTypeHeatmap.render({
+            name: charactName,
+            value: charactValue,
+            host: 'http://localhost:8080/gxa/sc/',
+            resource: `json/experiments/celltype/name/${charactName}/value/${charactValue}`
+        }, 'target')
+    }
 </script>
 
 </html>

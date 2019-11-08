@@ -14,21 +14,32 @@ const HighchartsHeatmap = props => {
   if(props.axisData.x && props.heatmapData) {
     while(i < props.axisData.x.length){
       while(j < props.axisData.y.length){
-        matrixData.push([i, j, Math.floor(props.heatmapData[j][i] * 1000) / 1000 + 1])
+        if(props.heatmapData[j][i]!==undefined){matrixData.push([i, j, Math.floor(props.heatmapData[j][i] * 1000) / 1000 + 1])}
+        else{matrixData.push([i,j,null])}
         j++
       }
       i++
       j=0
     }
   }
+  console.log(`matrixData`, matrixData, props.axisData.y,)
 
   const options = {
     chart: {
       type: `heatmap`,
       zoomType: `y`,
-      height: props.axisData.y && props.axisData.y.length*20,
-      width: props.axisData.x && props.axisData.x.length*100
-
+      height: props.axisData.y && props.axisData.y.length * 20,
+      width: 1200
+    },
+    lang: {
+      noData: `There are no marker genes for this k value. Try selecting another k.`,
+    },
+    noData: {
+      style: {
+        fontWeight: `bold`,
+        fontSize: `16px`,
+        color: `#000000`
+      }
     },
     credits: {
       enabled: false
@@ -44,7 +55,7 @@ const HighchartsHeatmap = props => {
       categories: props.axisData.x,
       opposite: true,
       labels: {
-        autoRotation: [-20]}
+        autoRotation: [-90]}
     },
 
     yAxis: {
@@ -77,10 +88,16 @@ const HighchartsHeatmap = props => {
     },
 
     colorAxis: {
-      type: `logarithmic`,
-      minColor: `#FFFFFF`,
-      maxColor: `#024990`,
-      stops: [[0, `#FFFFFF`], [0.67, `#9ecae1`], [1, `#3182bd`]],
+      min: 0.1,
+      max: 1000,
+      stops: [
+        [0, `#ffffff`],
+        [0.67, `#6077bf`],
+        [1, `#0e0573`]
+      ],
+      marker: {
+        color: `#e96b23`
+      }
     },
 
     legend: {

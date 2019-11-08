@@ -40,9 +40,12 @@ class CellTypeHeatmap extends React.Component {
 
       const results = Object.values(await response.json())[0]
       const experimentAccessions = Object.keys(results)
-      const markerGenes = _.flatMap(experimentAccessions.map(accession => Object.keys(results[accession])))
-      const cellTypes = _.flatMap(experimentAccessions.map(accession =>
-        Object.keys(results[accession][Object.keys(results[accession])[0]])))
+      const markerGenes = Object.keys(results[experimentAccessions[0]]).sort()
+      const cellTypes = experimentAccessions.map(accession =>
+        Object.keys(results[accession][Object.keys(results[accession])[0]])
+      )
+
+
       this.setState({
         experimentAccession: Object.keys(results),
         expressionByCellTypeData: response,
@@ -69,18 +72,23 @@ class CellTypeHeatmap extends React.Component {
     const experimentAccessions = Object.keys(results)
     const heatmapData = markerGenes.map(markerGene =>
       _.flatMap(
-        cellTypes.map(cellType =>
-          experimentAccessions.map((experimentAccession) => results[experimentAccession][markerGene][cellType])
+        experimentAccessions.map((experimentAccession, idx) =>
+          cellTypes[idx].map(cellType => {
+            return results[experimentAccession][markerGene][cellType]}
+
+          )
         )
       )
     )
+    console.log(`heatmapdata`, heatmapData)
+
     return heatmapData
   }
 
   _heatmapAxis(experimentAccessions, cellTypes, markerGenes) {
     const yAxisCategory = _.flatMap(
-      experimentAccessions.map(experimentAccession =>
-        cellTypes.map(
+      experimentAccessions.map((experimentAccession, idx) =>
+        cellTypes[idx].map(
           cellType => `${cellType} <br> ${experimentAccession}`
         )
       )

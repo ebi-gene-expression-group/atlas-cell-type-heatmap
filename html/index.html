@@ -8,22 +8,21 @@
     <link rel="stylesheet" href="https://www.ebi.ac.uk/web_guidelines/EBI-Icon-fonts/v1.2/fonts.css" type="text/css" media="all" />
 
     <link rel="stylesheet" href="https://www.ebi.ac.uk/gxa/resources/css/foundation/atlas.css" type="text/css" media="all">
+    <style type="text/css">
+        #target input {
+            height: unset;
+            box-shadow: none;
+            margin: 0;
+        }
+
+        div.highcharts-button span {
+            pointer-events: none;
+        }
+    </style>
 </head>
 
 <body>
-<div id="wrapper" class="row">
-    <div class="small-12 columns">
-        <form action="update()">
-            Charateristic name:<br>
-            <input type="text" title="charateristic name" id="name" value="organism_part" />
-            <br>
-            Charateristic value:<br>
-            <input type="text" title="charateristic value" id="value" value="pancreas" />
-        </form>
-        <button class="button" onclick="update()">Render</button>
-
-    </div>
-
+<div id="wrapper" class="row expanded">
     <div id="content" class="small-12 columns">
         <div id="target">
         </div>
@@ -36,16 +35,7 @@
 
 <!-- Set to http://localhost:8080/gxa/ or http://localhost:8080/gxa_sc/ -- Remember the trailing slash! -->
 <script>
-    function update(){
-        var charactName = document.getElementById("name").value
-        var charactValue = document.getElementById("value").value
-        cellTypeHeatmap.render({
-            name: charactName,
-            value: charactValue,
-            host: 'http://localhost:8080/gxa/sc/',
-            resource: `json/experiments/celltype/name/${charactName}/value/${charactValue}`
-        }, 'target')
-    }
+    cellTypeHeatmap.render({}, 'target')
 </script>
 
 </html>

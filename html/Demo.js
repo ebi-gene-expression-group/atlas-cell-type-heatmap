@@ -20,12 +20,13 @@ class Demo extends React.Component {
   render() {
     const {selectedName, selectedValue} = this.state
     const valueOptions = values
-      .sort((a, b) => a-b)
       .map((v) => ({
         value: v.toString(),
         label: v,
         isDisabled: false
       }))
+
+    console.log(`valueOptions`,names.indexOf(this.state.selectedName), valueOptions)
 
     const nameOptions = names
       .sort((a, b) => a-b)
@@ -53,7 +54,7 @@ class Demo extends React.Component {
           <div className={`small-12 medium-6 columns`}>
             <PlotSettingsDropdown
               labelText={`Characteristic value:`}
-              options={valueOptions}
+              options={[valueOptions[names.indexOf(this.state.selectedName)]]}
               onSelect={(selectedOption) => {
                 this.setState({
                   selectedValue: selectedOption.value
@@ -78,13 +79,6 @@ class Demo extends React.Component {
             host={`http://localhost:8080/gxa/sc/`}
             value={this.state.value}
             name={this.state.name}
-            onSelectValue={
-              (k) => {
-                this.setState({
-                  value: k
-                })
-              }
-            }
             hasDynamicHeight={true}
             heatmapRowHeight={20}
           />

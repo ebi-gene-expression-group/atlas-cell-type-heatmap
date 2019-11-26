@@ -24,7 +24,6 @@ const HighchartsHeatmap = props => {
       j=0
     }
   }
-  console.log(`matrixData`, matrixData, props.axisData.y,)
 
   const options = {
     chart: {

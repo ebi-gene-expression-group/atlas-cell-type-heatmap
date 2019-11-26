@@ -19,7 +19,7 @@ class CellTypeHeatmap extends React.Component {
       experimentAccessions: [],
       responseByAccession: [],
       axisData: {},
-      selectedExperiment: `All`
+      selectedExperiment: null
     }
   }
 
@@ -44,7 +44,6 @@ class CellTypeHeatmap extends React.Component {
       const experimentAccessions = Object.keys(results)
       const markerGenes = Object.keys(results[experimentAccessions[0]]).sort()
 
-
       this.setState({
         markerGenes: markerGenes,
         experimentAccessions: Object.keys(results),
@@ -53,7 +52,8 @@ class CellTypeHeatmap extends React.Component {
         axisData: this._heatmapAxis(markerGenes, results),
         heatmapData: this._factorHeatmapData(markerGenes, results),
         filteredData: this._factorHeatmapData(markerGenes, results),
-        isLoading: false
+        isLoading: false,
+        selectedExperiment: null
       })
 
     } catch(e) {
@@ -151,21 +151,20 @@ class CellTypeHeatmap extends React.Component {
           <div className={wrapperClassName}>
             <div className={`small-12 medium-6 columns`}>
               <PlotSettingsDropdown
-                labelText={`Experiment:`}
+                labelText={`Show Gene Expressions for Experiment:`}
                 options={experimentOptions}
                 onSelect={(selectedOption) =>{
                   this.setState({
-                    heatmapData: _.cloneDeep(heatmapData),
                     filteredData: selectedOption.value === `all` ?
                       _.cloneDeep(heatmapData) :
                       this._factorHeatmapData(markerGenes, responseByAccession, selectedOption.value),
                     axisData: selectedOption.value === `all` ?
                       this._heatmapAxis(markerGenes, responseByAccession) :
                       this._heatmapAxis(markerGenes, responseByAccession, selectedOption.value),
-                    selectedExperiment: selectedOption.value
+                    selectedExperiment: selectedOption
                   })
                 }}
-                value={{value: selectedExperiment, label: selectedExperiment}}
+                value={selectedExperiment || experimentOptions[0]}
               />
             </div>
           </div>
@@ -173,7 +172,7 @@ class CellTypeHeatmap extends React.Component {
             <div className={plotWrapperClassName} style={{position: `relative`}}>
               <HighchartsHeatmap
                 axisData={axisData}
-                heatmapData={selectedExperiment.value === `all` ? heatmapData : filteredData}
+                heatmapData={filteredData}
                 chartHeight={defaultHeatmapHeight}
                 hasDynamicHeight={axisData.y && axisData.y.length > 5 ? hasDynamicHeight : false} // don't want dynamic height if there is little or no data
                 heatmapRowHeight={heatmapRowHeight}

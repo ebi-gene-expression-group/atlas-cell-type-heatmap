@@ -9,6 +9,8 @@ import HC_heatmap from "highcharts/modules/heatmap"
 HC_heatmap(Highcharts)
 
 const HighchartsHeatmap = props => {
+  const { chartHeight, hasDynamicHeight, heatmapRowHeight } = props
+
   let matrixData = []
   let i=0, j=0
   if(props.axisData.x && props.heatmapData) {
@@ -28,8 +30,7 @@ const HighchartsHeatmap = props => {
     chart: {
       type: `heatmap`,
       zoomType: `y`,
-      height: props.axisData.y && props.axisData.y.length * 20,
-      width: 1200
+      height: hasDynamicHeight ? props.axisData.y && props.axisData.y.length * heatmapRowHeight : chartHeight,
     },
     lang: {
       noData: `There are no marker genes for this k value. Try selecting another k.`,
@@ -128,6 +129,9 @@ const HighchartsHeatmap = props => {
 }
 
 HighchartsHeatmap.propTypes = {
+  chartHeight: PropTypes.number.isRequired,
+  hasDynamicHeight: PropTypes.bool.isRequired,
+  heatmapRowHeight: PropTypes.number.isRequired,
   axisData: PropTypes.shape({
     y: PropTypes.array,
     x: PropTypes.array

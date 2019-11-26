@@ -7,6 +7,7 @@ import _ from "lodash"
 import HighchartsHeatmap from "./HighchartsHeatmap"
 import CalloutAlert from './CalloutAlert'
 import LoadingOverlay from './LoadingOverlay'
+import PlotSettingsDropdown from './PlotSettingsDropdown'
 
 
 class CellTypeHeatmap extends React.Component {
@@ -17,7 +18,8 @@ class CellTypeHeatmap extends React.Component {
       solrResponse: [],
       experimentAccessions: [],
       responseByAccession: [],
-      axisData: {}
+      axisData: {},
+      selectedExperiment: `All`
     }
   }
 
@@ -41,17 +43,16 @@ class CellTypeHeatmap extends React.Component {
       const results = Object.values(await response.json())[0]
       const experimentAccessions = Object.keys(results)
       const markerGenes = Object.keys(results[experimentAccessions[0]]).sort()
-      const cellTypes = experimentAccessions.map(accession =>
-        Object.keys(results[accession][Object.keys(results[accession])[0]])
-      )
 
 
       this.setState({
-        experimentAccession: Object.keys(results),
+        markerGenes: markerGenes,
+        experimentAccessions: Object.keys(results),
         expressionByCellTypeData: response,
         responseByAccession: results,
-        axisData: this._heatmapAxis(experimentAccessions, cellTypes, markerGenes),
-        heatmapData:  this._factorHeatmapData(markerGenes, results, cellTypes),
+        axisData: this._heatmapAxis(markerGenes, results),
+        heatmapData: this._factorHeatmapData(markerGenes, results),
+        filteredData: this._factorHeatmapData(markerGenes, results),
         isLoading: false
       })
 
@@ -68,24 +69,29 @@ class CellTypeHeatmap extends React.Component {
     }
   }
 
-  _factorHeatmapData(markerGenes, results, cellTypes) {
-    const experimentAccessions = Object.keys(results)
+  _factorHeatmapData(markerGenes, results, selectedExperiment) {
+    const experimentAccessions = selectedExperiment ? [selectedExperiment] : Object.keys(results)
+    const cellTypes = experimentAccessions.map(accession =>
+      Object.keys(results[accession][Object.keys(results[accession])[0]])
+    )
     const heatmapData = markerGenes.map(markerGene =>
       _.flatMap(
         experimentAccessions.map((experimentAccession, idx) =>
           cellTypes[idx].map(cellType => {
-            return results[experimentAccession][markerGene][cellType]}
-
-          )
+            return results[experimentAccession][markerGene][cellType]
+          })
         )
       )
     )
-    console.log(`heatmapdata`, heatmapData)
-
     return heatmapData
   }
 
-  _heatmapAxis(experimentAccessions, cellTypes, markerGenes) {
+  _heatmapAxis(markerGenes, results, selectedExperiment) {
+    const experimentAccessions = selectedExperiment ? [selectedExperiment] : Object.keys(results)
+    const cellTypes = experimentAccessions.map(accession =>
+      Object.keys(results[accession][Object.keys(results[accession])[0]])
+    )
+
     const yAxisCategory = _.flatMap(
       experimentAccessions.map((experimentAccession, idx) =>
         cellTypes[idx].map(
@@ -118,15 +124,65 @@ class CellTypeHeatmap extends React.Component {
 
   render() {
     const { heatmapData, axisData, hasError, isLoading } = this.state
+    const { wrapperClassName, plotWrapperClassName } = this.props
+    const { hasDynamicHeight, defaultHeatmapHeight, heatmapRowHeight } = this.props
+    const { selectedExperiment, experimentAccessions, markerGenes, responseByAccession, filteredData } = this.state
+
+    const experimentOptions = experimentAccessions
+      .sort((a, b) => a-b)
+      .map((v) => ({
+        value: v.toString(),
+        label: v,
+        isDisabled: false
+      }))
+
+    if (experimentOptions.length > 1) {
+      experimentOptions.unshift({
+        value: `all`,
+        label: `All`,
+        isDisabled: false
+      })
+    }
 
     return (
       hasError ?
         <CalloutAlert error={hasError}/> :
-        <div className="row">
-          <HighchartsHeatmap axisData={axisData} heatmapData={heatmapData} />
-          <LoadingOverlay
-            show={isLoading}
-          />
+        <div>
+          <div className={wrapperClassName}>
+            <div className={`small-12 medium-6 columns`}>
+              <PlotSettingsDropdown
+                labelText={`Experiment:`}
+                options={experimentOptions}
+                onSelect={(selectedOption) =>{
+                  this.setState({
+                    heatmapData: _.cloneDeep(heatmapData),
+                    filteredData: selectedOption.value === `all` ?
+                      _.cloneDeep(heatmapData) :
+                      this._factorHeatmapData(markerGenes, responseByAccession, selectedOption.value),
+                    axisData: selectedOption.value === `all` ?
+                      this._heatmapAxis(markerGenes, responseByAccession) :
+                      this._heatmapAxis(markerGenes, responseByAccession, selectedOption.value),
+                    selectedExperiment: selectedOption.value
+                  })
+                }}
+                value={{value: selectedExperiment, label: selectedExperiment}}
+              />
+            </div>
+          </div>
+          <div className={wrapperClassName}>
+            <div className={plotWrapperClassName} style={{position: `relative`}}>
+              <HighchartsHeatmap
+                axisData={axisData}
+                heatmapData={selectedExperiment.value === `all` ? heatmapData : filteredData}
+                chartHeight={defaultHeatmapHeight}
+                hasDynamicHeight={axisData.y && axisData.y.length > 5 ? hasDynamicHeight : false} // don't want dynamic height if there is little or no data
+                heatmapRowHeight={heatmapRowHeight}
+              />
+              <LoadingOverlay
+                show={isLoading}
+              />
+            </div>
+          </div>
         </div>
     )
   }
@@ -134,7 +190,21 @@ class CellTypeHeatmap extends React.Component {
 
 CellTypeHeatmap.propTypes = {
   host: PropTypes.string.isRequired,
-  resource: PropTypes.string.isRequired
+  resource: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  wrapperClassName: PropTypes.string,
+  plotWrapperClassName: PropTypes.string,
+  defaultHeatmapHeight: PropTypes.number,
+  hasDynamicHeight: PropTypes.bool,
+  heatmapRowHeight: PropTypes.number
 }
 
+CellTypeHeatmap.defaultProps = {
+  wrapperClassName: `row`,
+  plotWrapperClassName: `small-12 columns`,
+  defaultHeatmapHeight: 300,
+  hasDynamicHeight: true,
+  heatmapRowHeight: 20
+}
 export default CellTypeHeatmap

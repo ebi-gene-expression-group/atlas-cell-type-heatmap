@@ -4,13 +4,13 @@ import PropTypes from 'prop-types'
 import URI from 'urijs'
 import _ from "lodash"
 
-import HighchartsHeatmap from "./HighchartsHeatmap"
+import CellTypeHighchartsHeatmap from "./CellTypeHighchartsHeatmap"
 import CalloutAlert from './CalloutAlert'
 import LoadingOverlay from './LoadingOverlay'
 import PlotSettingsDropdown from './PlotSettingsDropdown'
 
 
-class CellTypeHeatmap extends React.Component {
+class CellTypeView extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -170,7 +170,7 @@ class CellTypeHeatmap extends React.Component {
           </div>
           <div className={wrapperClassName}>
             <div className={plotWrapperClassName} style={{position: `relative`}}>
-              <HighchartsHeatmap
+              <CellTypeHighchartsHeatmap
                 axisData={axisData}
                 heatmapData={filteredData}
                 chartHeight={defaultHeatmapHeight}
@@ -187,7 +187,7 @@ class CellTypeHeatmap extends React.Component {
   }
 }
 
-CellTypeHeatmap.propTypes = {
+CellTypeView.propTypes = {
   host: PropTypes.string.isRequired,
   resource: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
@@ -199,11 +199,11 @@ CellTypeHeatmap.propTypes = {
   heatmapRowHeight: PropTypes.number
 }
 
-CellTypeHeatmap.defaultProps = {
+CellTypeView.defaultProps = {
   wrapperClassName: `row`,
   plotWrapperClassName: `small-12 columns`,
   defaultHeatmapHeight: 300,
   hasDynamicHeight: true,
   heatmapRowHeight: 20
 }
-export default CellTypeHeatmap
+export default CellTypeView

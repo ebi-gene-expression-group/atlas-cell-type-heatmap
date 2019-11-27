@@ -8,8 +8,8 @@ import '@babel/polyfill'
 import fetchMock from 'fetch-mock'
 
 import CalloutAlert from '../src/CalloutAlert'
-import CellTypeHeatmap from '../src/CellTypeHeatmap'
-import HighchartsHeatmap from '../src/HighchartsHeatmap'
+import CellTypeView from '../src/CellTypeView'
+import CellTypeHighchartsHeatmap from '../src/CellTypeHighchartsHeatmap'
 
 Enzyme.configure({ adapter: new Adapter() })
 
@@ -29,19 +29,19 @@ describe(`CellTypeHeatmap`, () => {
   }
 
   test(`Renders error if API request is unsuccessful`, () => {
-    const wrapper = shallow(<CellTypeHeatmap {...props} />)
+    const wrapper = shallow(<CellTypeView {...props} />)
     expect(wrapper.exists(CalloutAlert)).toBe(true)
   })
 
   test(`Renders heatmap if API request is successful`, () => {
-    const wrapper = mount(<CellTypeHeatmap {...validProps} />)
+    const wrapper = mount(<CellTypeView {...validProps} />)
 
     Promise
       .resolve(wrapper)
       .then(() => wrapper.update())
       .then(() => wrapper.update())
       .then(() => {
-        expect(wrapper.exists(HighchartsHeatmap)).toBe(true)
+        expect(wrapper.exists(CellTypeHighchartsHeatmap)).toBe(true)
       })
   })
 

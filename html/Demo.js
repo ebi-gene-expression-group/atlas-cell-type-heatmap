@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import CellTypeHeatmap from '../src/index.js'
+import CellTypeView from '../src/index.js'
 import PlotSettingsDropdown from "../src/PlotSettingsDropdown"
 const names = [`sex`, `organism_part`], values = [[`female`], [`lymph node`, `pancreas`, `skin`]]
 
@@ -71,7 +71,7 @@ class Demo extends React.Component {
         </div>
 
         <div style={{paddingBottom: `25px`}}>
-          <CellTypeHeatmap
+          <CellTypeView
             wrapperClassName={`row expanded`}
             resource={`json/metadata-search/name/${this.state.name}/value/${this.state.value}`}
             host={`http://localhost:8080/gxa/sc/`}

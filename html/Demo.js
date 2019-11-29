@@ -174,6 +174,7 @@ class Demo extends React.Component {
               resource={`json/metadata-search/expression/name/inferred_cell_type/value/${this.state.cellType}`}
               host={`http://localhost:8080/gxa/sc/`}
               hasDynamicHeight={true}
+              species={this.state.selectedSpecies}
               heatmapRowHeight={20}
             />
           </div>

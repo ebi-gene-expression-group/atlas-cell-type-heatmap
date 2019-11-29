@@ -76,7 +76,11 @@ const CellTypeHighchartsHeatmap = props => {
       step: 1
     },
     title: {
-      text: `Heatmap for cell types vs marker genes`
+      text: `Cell types vs Marker genes`,
+      style: {
+        fontSize: `25px`,
+        fontWeight: `bold`
+      }
     },
 
     xAxis: {
@@ -131,7 +135,7 @@ const CellTypeHighchartsHeatmap = props => {
 
     legend: {
       title: {
-        text: `Median expression (CPM)`
+        text: `Average expression (CPM)`
       },
       align: `center`,
       verticalAlign: `top`,

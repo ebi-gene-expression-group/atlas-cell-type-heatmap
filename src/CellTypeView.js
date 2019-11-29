@@ -40,21 +40,22 @@ class CellTypeView extends React.Component {
         throw new Error(`${url} => ${response.status}`)
       }
 
-      const results = Object.values(await response.json())[0]
-      const speciesList = Object.keys(results)
-      const experimentAccessionsBySpecies = speciesList.map(species => Object.keys(results[species]))
-      const markerGenesBySpecies = speciesList.map(
-        (species, idx) => Object.keys(results[species][experimentAccessionsBySpecies[idx][0]]).sort())
+      const { species } = this.props
+
+      let results = Object.values(await response.json())[0][species]
+      //results = fixture.markerGeneExpressionByCellType
+
+      const experimentAccessions = Object.keys(results)
+      const markerGenes = Object.keys(results[experimentAccessions[0]]).sort()
 
       this.setState({
-        speciesList: speciesList,
-        markerGenesBySpecies: markerGenesBySpecies,
-        experimentAccessionsBySpecies: experimentAccessionsBySpecies,
+        markerGenes: markerGenes,
+        experimentAccessions: experimentAccessions,
         expressionByCellTypeData: response,
         responseBySpecies: results,
-        axisData: this._heatmapAxis(markerGenesBySpecies, results),
-        heatmapData: this._factorHeatmapData(markerGenesBySpecies, results),
-        filteredData: this._factorHeatmapData(markerGenesBySpecies, results),
+        axisData: this._heatmapAxis(markerGenes, results),
+        heatmapData: this._factorHeatmapData(markerGenes, results),
+        filteredData: this._factorHeatmapData(markerGenes, results),
         isLoading: false,
         selectedSpecies: null
       })
@@ -72,20 +73,18 @@ class CellTypeView extends React.Component {
     }
   }
 
-  _factorHeatmapData(markerGenesBySpecies, responseBySpecies, selectedSpecies) {
+  _factorHeatmapData(markerGenesBySpecies, responseBySpecies) {
 
-    const species = selectedSpecies || Object.keys(responseBySpecies)[0]
-    const experimentAccessions = Object.keys(responseBySpecies[species])
-    const speciesIndex = Object.keys(responseBySpecies).indexOf(species)
+    const experimentAccessions = Object.keys(responseBySpecies)
 
     const cellTypes = experimentAccessions.map(accession =>
-      Object.keys(responseBySpecies[species][accession][Object.keys(responseBySpecies[species][accession])[0]])
+      Object.keys(responseBySpecies[accession][Object.keys(responseBySpecies[accession])[0]])
     )
-    const heatmapData = markerGenesBySpecies[speciesIndex].map(markerGene =>
+    const heatmapData = markerGenesBySpecies.map(markerGene =>
       _.flatMap(
         experimentAccessions.map((experimentAccession, idx) =>
           cellTypes[idx].map(cellType => {
-            return responseBySpecies[species][experimentAccession][markerGene][cellType]
+            return responseBySpecies[experimentAccession][markerGene][cellType]
           })
         )
       )
@@ -93,13 +92,11 @@ class CellTypeView extends React.Component {
     return heatmapData
   }
 
-  _heatmapAxis(markerGenesBySpecies, responseBySpecies, selectedSpecies) {
-    const species = selectedSpecies || Object.keys(responseBySpecies)[0]
-    const experimentAccessions = Object.keys(responseBySpecies[species])
-    const speciesIndex = Object.keys(responseBySpecies).indexOf(species)
+  _heatmapAxis(markerGenesBySpecies, responseBySpecies) {
+    const experimentAccessions = Object.keys(responseBySpecies)
 
     const cellTypes = experimentAccessions.map(accession =>
-      Object.keys(responseBySpecies[species][accession][Object.keys(responseBySpecies[species][accession])[0]])
+      Object.keys(responseBySpecies[accession][Object.keys(responseBySpecies[accession])[0]])
     )
 
     const yAxisCategory = _.flatMap(
@@ -109,7 +106,7 @@ class CellTypeView extends React.Component {
         )
       )
     )
-    return ({ y: markerGenesBySpecies[speciesIndex], x: yAxisCategory })
+    return ({ y: markerGenesBySpecies, x: yAxisCategory })
   }
 
   componentDidMount() {
@@ -166,7 +163,8 @@ CellTypeView.propTypes = {
   plotWrapperClassName: PropTypes.string,
   defaultHeatmapHeight: PropTypes.number,
   hasDynamicHeight: PropTypes.bool,
-  heatmapRowHeight: PropTypes.number
+  heatmapRowHeight: PropTypes.number,
+  species: PropTypes.string.isRequired
 }
 
 CellTypeView.defaultProps = {

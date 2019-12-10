@@ -1,1 +1,1 @@
-export { default } from './MyComponent.js'
+export { default } from './CellTypeView'

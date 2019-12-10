@@ -79,10 +79,12 @@ class Demo extends React.Component {
     const cellTypesOptions = selectedSpecies ?
       cellTypes[specieses.indexOf(selectedSpecies)]
         .map((v) => ({
-          value: v.toString().substring(1,v.length-1),
-          label: v.toString().substring(1,v.length-1),
+          value: v.toString().substring(1, v.length - 1),
+          label: v.toString().substring(1, v.length - 1),
           isDisabled: false
-        })) : []
+        }))
+        .filter(v => v.value !== `not available` || v.value !== `not applicable`) :
+      []
 
     const speciesOptions = specieses
       .map((v) => ({

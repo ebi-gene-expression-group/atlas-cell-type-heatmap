@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 
 import CellTypeView from '../src/index.js'
 import PlotSettingsDropdown from "../src/PlotSettingsDropdown"
-import URI from "urijs"
+import _ from "lodash"
 import LoadingOverlay from "../src/LoadingOverlay"
 const names = [`sex`, `organism_part`], values = [[`female`, `male`], [`lymph node`, `pancreas`, `skin`]]
 
@@ -35,9 +35,7 @@ class Demo extends React.Component {
 
       const result = Object.values(await response.json())[0]
       const specieses = Object.keys(result)
-      const cellTypes = specieses.map(species => Object.values(result[species])[0])
-
-      console.log(result, specieses, cellTypes)
+      const cellTypes = specieses.map(species => _.uniq(_.flatMap(Object.values(result[species]))))
 
       this.setState({
         result: result,
@@ -61,7 +59,6 @@ class Demo extends React.Component {
   render() {
     const {selectedName, selectedValue, selectedSpecies, selectedCellType, specieses, cellTypes, isLoading} = this.state
 
-    console.log(`states`,selectedName, selectedValue, selectedSpecies, specieses, cellTypes )
     const valueOptions = values[names.indexOf(selectedName)]
       .map((v) => ({
         value: v.toString(),
@@ -83,7 +80,7 @@ class Demo extends React.Component {
           label: v.toString().substring(1, v.length - 1),
           isDisabled: false
         }))
-        .filter(v => v.value !== `not available` || v.value !== `not applicable`) :
+        .filter(v => v.value !== `not available` && v.value !== `not applicable` && v.value !== ``) :
       []
 
     const speciesOptions = specieses
@@ -149,7 +146,7 @@ class Demo extends React.Component {
           </div>
           <div className={`small-12 medium-5 columns`}>
             <PlotSettingsDropdown
-              labelText={`Cell types:`}
+              labelText={`Inferred cell types:`}
               options={cellTypesOptions}
               onSelect={(selectedOption) => {
                 this.setState({
@@ -177,7 +174,7 @@ class Demo extends React.Component {
               host={`http://localhost:8080/gxa/sc/`}
               hasDynamicHeight={true}
               species={this.state.selectedSpecies}
-              heatmapRowHeight={20}
+              heatmapRowHeight={30}
             />
           </div>
         }

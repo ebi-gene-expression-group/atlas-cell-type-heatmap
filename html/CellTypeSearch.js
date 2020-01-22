@@ -1,13 +1,14 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import PropTypes from 'prop-types'
 
+import URI from 'urijs'
 import CellTypeView from '../src/index.js'
 import PlotSettingsDropdown from "../src/PlotSettingsDropdown"
 import _ from "lodash"
 import LoadingOverlay from "../src/LoadingOverlay"
 const names = [`sex`, `organism_part`], values = [[`female`, `male`], [`lymph node`, `pancreas`, `skin`]]
 
-class Demo extends React.Component {
+class CellTypeSearch extends React.Component {
   constructor(props) {
     super(props)
 
@@ -57,6 +58,7 @@ class Demo extends React.Component {
   }
 
   render() {
+    const requestParams = URI(location.search).query(true)
     const {selectedName, selectedValue, selectedSpecies, selectedCellType, specieses, cellTypes, isLoading} = this.state
 
     const valueOptions = values[names.indexOf(selectedName)]
@@ -118,7 +120,9 @@ class Demo extends React.Component {
             />
           </div>
           <div className={`small-12 medium-2 columns`} style={{paddingTop: `25px`}}>
-            <button className={`button`} onClick={() => {
+            <button className={`button`} onClick={(event) => {
+              event.preventDefault()
+              this.props.history.push(`/`)
               this._fetchCellTypes(this.state.selectedName, this.state.selectedValue)
               this.setState({
                 selectedSpecies: ``,
@@ -141,7 +145,7 @@ class Demo extends React.Component {
                   selectedSpecies: selectedOption.value
                 })
               }}
-              value={{value: selectedSpecies, label: selectedSpecies}}
+              value={{value: selectedSpecies || requestParams.species, label: selectedSpecies || requestParams.species}}
             />
           </div>
           <div className={`small-12 medium-5 columns`}>
@@ -153,27 +157,30 @@ class Demo extends React.Component {
                   selectedCellType: selectedOption.value
                 })
               }}
-              value={{value: selectedCellType, label: selectedCellType}}
+              value={{value: selectedCellType || requestParams.cellType, label: selectedCellType || requestParams.cellType}}
             />
           </div>
           <div className={`small-12 medium-2 columns`} style={{paddingTop: `25px`}}>
-            <button className={`button`} onClick={() => {
+            <button className={`button`} onClick={(event) => {
+              event.preventDefault()
+              this.props.history.push(`/search?species=` + this.state.selectedSpecies + `&cellType=` + this.state.selectedCellType)
               this.setState({
                 cellType: this.state.selectedCellType
               })}}>
-            Search</button>
+              Search
+            </button>
           </div>
 
 
         </div>
         {
-          this.state.cellType && <div style={{paddingBottom: `25px`}}>
+          requestParams.cellType && <div style={{paddingBottom: `25px`}}>
             <CellTypeView
               wrapperClassName={`row expanded`}
-              resource={`json/metadata-search/expression/name/inferred_cell_type/value/${this.state.cellType}`}
+              resource={`json/metadata-search/expression/name/inferred_cell_type/value/${requestParams.cellType}`}
               host={`http://localhost:8080/gxa/sc/`}
               hasDynamicHeight={true}
-              species={this.state.selectedSpecies}
+              species={requestParams.species}
               heatmapRowHeight={30}
             />
           </div>
@@ -186,8 +193,28 @@ class Demo extends React.Component {
   }
 }
 
-const render = (options, target) => {
-  ReactDOM.render(<Demo {...options} />, document.getElementById(target))
+CellTypeSearch.propTypes = {
+  atlasUrl: PropTypes.string.isRequired,
+  history: PropTypes.object.isRequired
+  // If we really need to know history’s propTypes (e.g. for tests) here they are:
+  // history: PropTypes.shape({
+  //   length: PropTypes.number.isRequired,
+  //   action: PropTypes.oneOf([`POP`, `PUSH`, `REPLACE`]).isRequired,
+  //   location: PropTypes.shape({
+  //     hash: PropTypes.string.isRequired,
+  //     key: PropTypes.string.isRequired,
+  //     query: PropTypes.string,
+  //     state: PropTypes.string
+  //   }).isRequired,
+  //   createHref: PropTypes.func.isRequired,
+  //   push: PropTypes.func.isRequired,
+  //   replace: PropTypes.func.isRequired,
+  //   go: PropTypes.func.isRequired,
+  //   goBack: PropTypes.func.isRequired,
+  //   goForward: PropTypes.func.isRequired,
+  //   block: PropTypes.func.isRequired,
+  //   listen: PropTypes.func.isRequired
+  // })
 }
 
-export {render}
+export default CellTypeSearch

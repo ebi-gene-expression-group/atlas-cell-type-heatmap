@@ -2,16 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { BrowserRouter, Route } from 'react-router-dom'
 
-import CellTypeView from './CellTypeView'
+import CellTypeSearch from './CellTypeSearch'
 
-const CellTypeHeatmapRouter = ({atlasUrl, basename}) =>
-  <BrowserRouter basename={basename}>
+const CellTypeHeatmapRouter = () =>
+  <BrowserRouter basename={``}>
     <Route
-      path={`/search`}
+      path={`/`}
       render={
         ({match, location, history}) =>
-          <CellTypeView
-            atlasUrl={atlasUrl}
+          <CellTypeSearch
             history={history}/>
       } />
   </BrowserRouter>

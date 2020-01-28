@@ -2,7 +2,6 @@ import React from 'react'
 import Enzyme from 'enzyme'
 import {shallow, mount} from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16'
-import renderer from 'react-test-renderer'
 
 import '@babel/polyfill'
 import fetchMock from 'fetch-mock'

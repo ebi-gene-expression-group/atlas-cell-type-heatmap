@@ -2,10 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import URI from 'urijs'
-import CellTypeView from '../src/index.js'
-import PlotSettingsDropdown from "../src/PlotSettingsDropdown"
 import _ from "lodash"
+import CellTypeView from '../src/index.js'
 import LoadingOverlay from "../src/LoadingOverlay"
+import PlotSettingsDropdown from "./PlotSettingsDropdown"
 
 const names = [`sex`, `organism_part`], values = [[`female`, `male`], [`lymph node`, `pancreas`, `skin`]]
 

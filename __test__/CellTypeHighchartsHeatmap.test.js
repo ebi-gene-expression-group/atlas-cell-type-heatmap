@@ -8,7 +8,7 @@ import CellTypeHighchartsHeatmap from '../src/CellTypeHighchartsHeatmap'
 
 Enzyme.configure({ adapter: new Adapter() })
 
-describe(`HighchartsHeatmap`, () => {
+describe(`CellTypeHighchartsHeatmap`, () => {
   const props = {
     heatmapData: [1, 2, 4, 5, 6.3, 3.3],
     axisData: {x:[`1`, `2`], y: [`a`, `b`, `c`]}

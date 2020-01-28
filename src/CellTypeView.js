@@ -28,9 +28,6 @@ class CellTypeView extends React.Component {
       isLoading: true
     })
 
-    //  `http://localhost:8080/gxa/sc/json/experiments/celltype/name/organism_part/value/pancreas`
-    // "https://gist.githubusercontent.com/lingyun1010/095f414db81d34cef2a3bc8eaf56544f/raw/e898dd2ce08fb427e929df6c8dac262920f244a7/cellTypeAPIJsonResponse.json"
-
     const url = URI(resource, host).toString()
 
     try {

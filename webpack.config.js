@@ -6,7 +6,7 @@ const vendorsBundleName = `vendors`
 
 module.exports = {
   entry: {
-    searchRouter: [`whatwg-fetch`, `@babel/polyfill`, `./html/index.js`],
+    searchRouter: [`whatwg-fetch`, `@babel/polyfill`, `./html/render.js`],
   },
 
   plugins: [

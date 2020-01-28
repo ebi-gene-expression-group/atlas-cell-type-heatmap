@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import CellTypeView from '../src/index.js'
+import CellTypeHeatmapRouter from './CellTypeHeatmapRouter'
 
-const render = (options, target) => {
-  ReactDOM.render(<CellTypeView {...options} />, document.getElementById(target))
+const render = (options, mountNodeId) => {
+  ReactDOM.render(<CellTypeHeatmapRouter {...options} />,  document.getElementById(mountNodeId))
 }
 
-export {render}
+export { render }

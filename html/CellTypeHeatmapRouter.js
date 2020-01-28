@@ -9,7 +9,7 @@ const CellTypeHeatmapRouter = () =>
     <Route
       path={`/`}
       render={
-        ({match, location, history}) =>
+        ({history}) =>
           <CellTypeSearch
             history={history}/>
       } />

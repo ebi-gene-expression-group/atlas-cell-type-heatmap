@@ -6,6 +6,7 @@ import CellTypeView from '../src/index.js'
 import PlotSettingsDropdown from "../src/PlotSettingsDropdown"
 import _ from "lodash"
 import LoadingOverlay from "../src/LoadingOverlay"
+
 const names = [`sex`, `organism_part`], values = [[`female`, `male`], [`lymph node`, `pancreas`, `skin`]]
 
 class CellTypeSearch extends React.Component {

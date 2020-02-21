@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "file-loader": "^4.2.0",
+    "he": "^1.2.0",
     "highcharts": "^7.2.1",
     "highcharts-react-official": "^2.2.2",
     "history": "^4.10.1",

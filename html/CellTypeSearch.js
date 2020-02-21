@@ -195,7 +195,6 @@ class CellTypeSearch extends React.Component {
 }
 
 CellTypeSearch.propTypes = {
-  atlasUrl: PropTypes.string.isRequired,
   history: PropTypes.object.isRequired
   // If we really need to know history’s propTypes (e.g. for tests) here they are:
   // history: PropTypes.shape({

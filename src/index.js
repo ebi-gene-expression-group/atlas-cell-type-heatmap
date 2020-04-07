@@ -6,7 +6,7 @@ import CellTypeSearch from './CellTypeSearch'
 const CellTypeHeatmapRouter = (options) =>
   <BrowserRouter basename={``}>
     <Route
-      path={`/`}
+      exact path={`/search`}
       render={
         ({history}) =>
           <CellTypeSearch

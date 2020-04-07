@@ -79,7 +79,7 @@ const DataSeriesHeatmapLegend = (props) =>
         data-icon="i" data-toggle="tooltip" data-placement="bottom"
         title={props.title}/>
     </LegendItem>
-    {props.legendItems.map(legendItemProps => <DataSeriesHeatmapLegendBox {...legendItemProps} />)}
+    {props.legendItems.map(legendItemProps => <DataSeriesHeatmapLegendBox key={legendItemProps} {...legendItemProps} />)}
     <DataSeriesHeatmapLegendBox
       key={props.missingValueLabel}
       name={props.missingValueLabel}
@@ -108,3 +108,4 @@ DataSeriesHeatmapLegend.defaultProps = {
 }
 
 export default DataSeriesHeatmapLegend
+export { DataSeriesHeatmapLegendBox }

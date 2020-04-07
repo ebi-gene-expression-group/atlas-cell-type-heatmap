@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PlotSettingsDropdown with no explicit props matches snapshot 1`] = `
+<div
+  className="sc-bxivhb bDTNtS"
+>
+  <div
+    className="sc-EHOje cizzKT"
+    color="white"
+  >
+    C
+  </div>
+  CPM
+  <div
+    className="sc-EHOje ccSpQn"
+    color="white"
+  >
+    T
+  </div>
+  TPM
+  <br />
+  <div
+    className="sc-bdVaJa XCEfz"
+  >
+    <span
+      className="sc-ifAKCX iySXmL"
+      data-icon="i"
+      data-placement="bottom"
+      data-toggle="tooltip"
+      title="Single cell expression CPM. Low: <10, Medium: 10-1,000, High: >1,000. "
+    />
+  </div>
+  <div
+    className="sc-bdVaJa XCEfz"
+  >
+    <div
+      className="sc-bwzfXH buNHcc"
+    />
+    <span
+      className="sc-htpNat jjecFx"
+    >
+      High
+    </span>
+  </div>
+  <div
+    className="sc-bdVaJa XCEfz"
+  >
+    <div
+      className="sc-bwzfXH efQDwT"
+    />
+    <span
+      className="sc-htpNat jjecFx"
+    >
+      Medium
+    </span>
+  </div>
+  <div
+    className="sc-bdVaJa XCEfz"
+  >
+    <div
+      className="sc-bwzfXH beksOx"
+    />
+    <span
+      className="sc-htpNat jjecFx"
+    >
+      Low
+    </span>
+  </div>
+  <div
+    className="sc-bdVaJa XCEfz"
+  >
+    <div
+      className="sc-bwzfXH kpsXFF"
+    />
+    <span
+      className="sc-htpNat jjecFx"
+    >
+      No data available
+    </span>
+  </div>
+</div>
+`;

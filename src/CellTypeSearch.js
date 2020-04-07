@@ -14,7 +14,8 @@ class CellTypeSearch extends React.Component {
     this.state = {
       selectedSpecies: ``,
       selectedCellType: ``,
-      cellType: ``
+      cellType: ``,
+      isLoading: false
     }
   }
 
@@ -70,8 +71,8 @@ class CellTypeSearch extends React.Component {
             />
           </div>
           <div className={`small-12 medium-2 columns`} style={{paddingTop: `25px`}}>
-            <button className={`button`} onClick={(event) => {
-              event.preventDefault()
+            <button className={`button`} onClick={() => {
+              //event.preventDefault()
               this.props.history.push(`/search?species=` + this.state.selectedSpecies + `&cellType=` + this.state.selectedCellType)
               this.setState({
                 cellType: this.state.selectedCellType
@@ -106,7 +107,7 @@ CellTypeSearch.propTypes = {
   host: PropTypes.string.isRequired,
   resource: PropTypes.string.isRequired,
   speciesList: PropTypes.arrayOf(PropTypes.string).isRequired,
-  cellTypeList: PropTypes.arrayOf(PropTypes.string).isRequired
+  cellTypePayload: PropTypes.object.isRequired
 }
 
 export default CellTypeSearch

@@ -2,82 +2,31 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import URI from 'urijs'
-import _ from "lodash"
 import CellTypeView from './CellTypeView'
 import LoadingOverlay from "./LoadingOverlay"
 import PlotSettingsDropdown from "./PlotSettingsDropdown"
-
-const names = [`sex`, `organism_part`], values = [[`female`, `male`], [`lymph node`, `pancreas`, `skin`]]
+import _ from "lodash"
 
 class CellTypeSearch extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      selectedName: `organism_part`,
-      selectedValue: `pancreas`,
-      specieses: [],
-      cellTypes: {}
-    }
-  }
-
-  async _fetchCellTypes(name, value) {
-    this.setState({
-      isLoading: true
-    })
-
-    const url = `http://localhost:8080/gxa/sc/json/metadata-search/cell-type/name/${name}/value/${value}`
-
-    try {
-      const response = await fetch(url)
-
-      if (!response.ok) {
-        throw new Error(`${url} => ${response.status}`)
-      }
-
-      const result = Object.values(await response.json())[0]
-      const specieses = Object.keys(result)
-      const cellTypes = specieses.map(species => _.uniq(_.flatMap(Object.values(result[species]))))
-
-      this.setState({
-        result: result,
-        specieses: specieses,
-        cellTypes: cellTypes,
-        isLoading: false
-      })
-    } catch(e) {
-      this.setState({
-        isLoading: false,
-        hasError: {
-          description: `There was a problem communicating with the server. Please try again later.`,
-          name: e.name,
-          message: e.message,
-          isLoading: false
-        }
-      })
+      selectedSpecies: ``,
+      selectedCellType: ``,
+      cellType: ``
     }
   }
 
   render() {
     const requestParams = URI(location.search).query(true)
-    const {selectedName, selectedValue, selectedSpecies, selectedCellType, specieses, cellTypes, isLoading} = this.state
+    const {speciesList, cellTypePayload, host, resource} = this.props
+    const {selectedSpecies, selectedCellType, isLoading} = this.state
 
-    const valueOptions = values[names.indexOf(selectedName)]
-      .map((v) => ({
-        value: v.toString(),
-        label: v,
-        isDisabled: false
-      }))
-
-    const nameOptions = names
-      .map((v) => ({
-        value: v.toString(),
-        label: v,
-        isDisabled: false
-      }))
+    const cellTypeList = speciesList.map(species => _.uniq(_.flatMap(Object.values(cellTypePayload[species]))))
 
     const cellTypesOptions = selectedSpecies ?
-      cellTypes[specieses.indexOf(selectedSpecies)]
+      cellTypeList[speciesList.indexOf(selectedSpecies)]
         .map((v) => ({
           value: v.toString().substring(1, v.length - 1),
           label: v.toString().substring(1, v.length - 1),
@@ -86,7 +35,7 @@ class CellTypeSearch extends React.Component {
         .filter(v => v.value !== `not available` && v.value !== `not applicable` && v.value !== ``) :
       []
 
-    const speciesOptions = specieses
+    const speciesOptions = speciesList
       .map((v) => ({
         value: v.toString(),
         label: v,
@@ -95,47 +44,6 @@ class CellTypeSearch extends React.Component {
 
     return (
       <div>
-        <div className={`row expanded`}>
-          <div className={`small-12 medium-5 columns`}>
-            <PlotSettingsDropdown
-              labelText={`Characteristic name:`}
-              options={nameOptions}
-              onSelect={(selectedOption) => {
-                this.setState({
-                  selectedName: selectedOption.value
-                })
-              }}
-              value={{value: selectedName, label: selectedName}}
-            />
-          </div>
-          <div className={`small-12 medium-5 columns`}>
-            <PlotSettingsDropdown
-              labelText={`Characteristic value:`}
-              options={valueOptions}
-              onSelect={(selectedOption) => {
-                this.setState({
-                  selectedValue: selectedOption.value
-                })
-              }}
-              value={{value: selectedValue, label: selectedValue}}
-            />
-          </div>
-          <div className={`small-12 medium-2 columns`} style={{paddingTop: `25px`}}>
-            <button className={`button`} onClick={(event) => {
-              event.preventDefault()
-              this.props.history.push(`/`)
-              this._fetchCellTypes(this.state.selectedName, this.state.selectedValue)
-              this.setState({
-                selectedSpecies: ``,
-                selectedCellType: ``
-              })
-            }}>
-              Search</button>
-          </div>
-        </div>
-
-
-
         <div className={`row expanded`}>
           <div className={`small-12 medium-5 columns`}>
             <PlotSettingsDropdown
@@ -172,14 +80,13 @@ class CellTypeSearch extends React.Component {
             </button>
           </div>
 
-
         </div>
         {
           requestParams.cellType && <div style={{paddingBottom: `25px`}}>
             <CellTypeView
               wrapperClassName={`row expanded`}
-              resource={`json/metadata-search/expression/name/inferred_cell_type/value/${requestParams.cellType}`}
-              host={`http://localhost:8080/gxa/sc/`}
+              resource={`${resource}/${requestParams.cellType}`}
+              host={host}
               hasDynamicHeight={true}
               species={requestParams.species}
               heatmapRowHeight={30}
@@ -195,26 +102,11 @@ class CellTypeSearch extends React.Component {
 }
 
 CellTypeSearch.propTypes = {
-  history: PropTypes.object.isRequired
-  // If we really need to know history’s propTypes (e.g. for tests) here they are:
-  // history: PropTypes.shape({
-  //   length: PropTypes.number.isRequired,
-  //   action: PropTypes.oneOf([`POP`, `PUSH`, `REPLACE`]).isRequired,
-  //   location: PropTypes.shape({
-  //     hash: PropTypes.string.isRequired,
-  //     key: PropTypes.string.isRequired,
-  //     query: PropTypes.string,
-  //     state: PropTypes.string
-  //   }).isRequired,
-  //   createHref: PropTypes.func.isRequired,
-  //   push: PropTypes.func.isRequired,
-  //   replace: PropTypes.func.isRequired,
-  //   go: PropTypes.func.isRequired,
-  //   goBack: PropTypes.func.isRequired,
-  //   goForward: PropTypes.func.isRequired,
-  //   block: PropTypes.func.isRequired,
-  //   listen: PropTypes.func.isRequired
-  // })
+  history: PropTypes.object.isRequired,
+  host: PropTypes.string.isRequired,
+  resource: PropTypes.string.isRequired,
+  speciesList: PropTypes.arrayOf(PropTypes.string).isRequired,
+  cellTypeList: PropTypes.arrayOf(PropTypes.string).isRequired
 }
 
 export default CellTypeSearch

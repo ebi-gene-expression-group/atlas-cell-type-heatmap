@@ -27,6 +27,10 @@
         <div id="target">
         </div>
     </div>
+    <div id="content2" class="small-12 columns">
+        <div id="target2">
+        </div>
+    </div>
 </div>
 </body>
 
@@ -35,7 +39,12 @@
 
 <!-- Set to http://localhost:8080/gxa/ or http://localhost:8080/gxa_sc/ -- Remember the trailing slash! -->
 <script>
-    searchRouter.render({}, 'target');
+    searchRouter.render({
+        resource: `json/metadata-search/expression/name/inferred_cell_type/value/`,
+        host: `http://localhost:8080/gxa/sc/`,
+        speciesList: [`Homo sapiens`],
+        cellTypePayload: {"Homo sapiens":{"E-MTAB-5061":["[beta cell]","[not available]","[pancreatic A cell]","[pancreatic PP cell]","[pancreatic ductal cell]","[endothelial cell]","[not applicable]","[mast cell]","[acinar cell]","[pancreatic stellate cell]","[pancreatic D cell]","[antigen presenting-MHC class II]","[pancreatic epsilon cell]"]}}
+    }, 'target', 'target2');
 </script>
 
 </html>

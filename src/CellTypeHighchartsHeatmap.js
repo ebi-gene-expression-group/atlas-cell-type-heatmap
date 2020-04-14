@@ -7,7 +7,7 @@ import HC_heatmap from "highcharts/modules/heatmap"
 import HighchartsExporting from 'highcharts/modules/exporting'
 import HighchartsExportData from 'highcharts/modules/export-data'
 
-import XAxisFormatter from './axesFormatters'
+import {XAxisFormatter, YAxisFormatter} from './axesFormatters'
 // init the module
 async function addModules() {
   HC_heatmap(Highcharts)
@@ -35,7 +35,8 @@ Highcharts.SVGRenderer.prototype.symbols.download = (x, y, w, h) => [
 const colour = (value) => value < 10 ? `#8cc6ff` : value < 1000 ? `#0000ff` : `#0000b3`
 
 const CellTypeHighchartsHeatmap = props => {
-  const { chartHeight, hasDynamicHeight, heatmapRowHeight, axisData, heatmapData } = props
+  const { chartHeight, hasDynamicHeight, heatmapRowHeight, axisData, heatmapData, species } = props
+  const plotLines = []
 
   let matrixData = []
   let i=0, j=0
@@ -55,6 +56,54 @@ const CellTypeHighchartsHeatmap = props => {
     }
   }
 
+  // We don't need to worry about plotlines and labels if the heatmap is showing data filtered by cluster ID
+  if(axisData.y) {
+    let plotLineAxisPosition = -0.5
+
+    // If we don't have a set row height, we try to estimate the height as worked out by Highcharts
+    let rowHeight = hasDynamicHeight ?
+      heatmapRowHeight :
+      Math.round((chartHeight - 175) / axisData.y.length + ((axisData.x.length-1) * 8))
+
+    axisData.x.forEach((experimentAccession, idx, array) => {
+      let numberOfRows = 30 // how many marker genes per cluster
+
+      plotLineAxisPosition = plotLineAxisPosition + numberOfRows
+
+      const yOffset = -numberOfRows * rowHeight/2
+
+      let color, zIndex
+      // don't show last plot line
+      if (idx === array.length-1) {
+        // removing the plot line altogether would remove the label, so we need to make it "invisible"
+        color = `#FFFFFF`
+        zIndex = 0
+      }
+      else {
+        color = `#000000`
+        zIndex = 5
+      }
+
+      plotLines.push({
+        color: color,
+        width: 2,
+        value: plotLineAxisPosition,
+        zIndex: zIndex,
+        label: {
+          text: experimentAccession.experimentAccession,
+          align: `right`,
+          textAlign: `left`,
+          x: 15,
+          y: yOffset,
+          style: {
+            fontWeight: `bold`,
+            fontSize: `12px`
+          }
+        }
+      })
+    })
+  }
+
   const dataWithColour = matrixData.map(info => [{
     data: [{x:info[0], y:info[1], value: info[2]}],
     color: colour(info[2]),
@@ -69,7 +118,7 @@ const CellTypeHighchartsHeatmap = props => {
       zoomType: `y`,
       height: hasDynamicHeight ? axisData.y && axisData.y.length * heatmapRowHeight : chartHeight,
       animation: false,
-      marginRight: matrixData.length !== 0 ? 100 : 0,
+      marginRight: matrixData.length !== 0 ? 150 : 0,
       plotBackgroundColor: `#eaeaea`,
       spacingBottom: 0,
       spacingTop: 0,
@@ -144,7 +193,15 @@ const CellTypeHighchartsHeatmap = props => {
       reversed: true,
       startOnTick: false,
       endOnTick: false,
-      showEmpty: false
+      showEmpty: false,
+      plotLines: plotLines,
+      labels: {
+        useHTML: true,
+        autoRotation: [-90],
+        formatter: function() {
+          return YAxisFormatter(species, this.value)
+        }
+      }
     },
 
     tooltip: {
@@ -223,6 +280,7 @@ const CellTypeHighchartsHeatmap = props => {
 }
 
 CellTypeHighchartsHeatmap.propTypes = {
+  species: PropTypes.string.isRequired,
   chartHeight: PropTypes.number.isRequired,
   hasDynamicHeight: PropTypes.bool.isRequired,
   heatmapRowHeight: PropTypes.number.isRequired,

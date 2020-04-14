@@ -41,10 +41,23 @@ const XAxisLabel = ({experimentAccession, technologyType}) => {
   )
 }
 
+const YAxisLabel = ({species, geneSymbol}) => {
+  const geneSearchResultUrl = `https://www.ebi.ac.uk/gxa/sc/search?q=${geneSymbol}&species=${species}`
+  return <a href={geneSearchResultUrl} style={{border: `none`, color: `#148ff3`}}>
+    {geneSymbol}
+  </a>
+}
+
 XAxisLabel.propTypes = {
   experimentAccession: PropTypes.string.isRequired,
   technologyType: PropTypes.string.isRequired
 }
+
+YAxisLabel.propTypes = {
+  species: PropTypes.string.isRequired,
+  geneSymbol: PropTypes.string.isRequired
+}
+
 
 const XAxisFormatter = value => reactToHtml(
   <XAxisLabel
@@ -53,5 +66,13 @@ const XAxisFormatter = value => reactToHtml(
   />
 )
 
+const YAxisFormatter = (species, geneSymbol) => {
+  return reactToHtml(
+    <YAxisLabel
+      species={species.species}
+      geneSymbol={geneSymbol}
+    />
+  )
+}
 
-export default  XAxisFormatter
+export {XAxisFormatter, YAxisFormatter}

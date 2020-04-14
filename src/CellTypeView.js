@@ -131,7 +131,7 @@ class CellTypeView extends React.Component {
 
   render() {
     const { axisData, hasError, isLoading, filteredData } = this.state
-    const { wrapperClassName, plotWrapperClassName } = this.props
+    const { wrapperClassName, plotWrapperClassName, species } = this.props
     const { hasDynamicHeight, defaultHeatmapHeight, heatmapRowHeight } = this.props
 
     return (
@@ -141,6 +141,7 @@ class CellTypeView extends React.Component {
         <div className={wrapperClassName}>
           <div className={plotWrapperClassName} style={{position: `relative`}}>
             <CellTypeHighchartsHeatmap
+              species={{species}}
               axisData={axisData}
               heatmapData={filteredData}
               chartHeight={defaultHeatmapHeight}

@@ -7,6 +7,7 @@ import _ from "lodash"
 import CellTypeHighchartsHeatmap from "./CellTypeHighchartsHeatmap"
 import CalloutAlert from './CalloutAlert'
 import LoadingOverlay from './LoadingOverlay'
+import DataSeriesHeatmapLegent from './DataSeriesHeatmapLegend'
 
 
 class CellTypeView extends React.Component {
@@ -15,9 +16,11 @@ class CellTypeView extends React.Component {
     this.state = {
       expressionByCellTypeData: [],
       solrResponse: [],
+      filteredData: [],
       experimentAccessionsBySpecies: [],
       responseBySpecies: [],
       axisData: {},
+      isLoading: false,
       speciesList: [],
       selectedSpecies: null
     }
@@ -27,9 +30,6 @@ class CellTypeView extends React.Component {
     this.setState({
       isLoading: true
     })
-
-    //  `http://localhost:8080/gxa/sc/json/experiments/celltype/name/organism_part/value/pancreas`
-    // "https://gist.githubusercontent.com/lingyun1010/095f414db81d34cef2a3bc8eaf56544f/raw/e898dd2ce08fb427e929df6c8dac262920f244a7/cellTypeAPIJsonResponse.json"
 
     const url = URI(resource, host).toString()
 
@@ -43,17 +43,15 @@ class CellTypeView extends React.Component {
       const { species } = this.props
 
       let results = Object.values(await response.json())[0][species]
-      //results = fixture.markerGeneExpressionByCellType
 
       const experimentAccessions = Object.keys(results)
-      const markerGenes = Object.keys(results[experimentAccessions[0]]).sort()
+      const markerGenes = Object.keys(results[experimentAccessions[0]].markerGeneExpression).sort()
+      const technologyType = Object.values(results).map(experimentAccession => experimentAccession.technologyType)
 
       this.setState({
-        markerGenes: markerGenes,
-        experimentAccessions: experimentAccessions,
         expressionByCellTypeData: response,
         responseBySpecies: results,
-        axisData: this._heatmapAxis(markerGenes, results),
+        axisData: this._heatmapAxis(markerGenes, results, technologyType),
         heatmapData: this._factorHeatmapData(markerGenes, results),
         filteredData: this._factorHeatmapData(markerGenes, results),
         isLoading: false,
@@ -77,14 +75,17 @@ class CellTypeView extends React.Component {
 
     const experimentAccessions = Object.keys(responseBySpecies)
 
-    const cellTypes = experimentAccessions.map(accession =>
-      Object.keys(responseBySpecies[accession][Object.keys(responseBySpecies[accession])[0]])
-    )
+    // const cellTypes = experimentAccessions.map(accession =>
+    //   Object.keys(responseBySpecies[accession][Object.keys(responseBySpecies[accession])[0]])
+    // )
+
+    const cellTypes = Object.keys(Object.values((Object.values(responseBySpecies)[0]).markerGeneExpression)[0])
+
     const heatmapData = markerGenesBySpecies.map(markerGene =>
       _.flatMap(
-        experimentAccessions.map((experimentAccession, idx) =>
-          cellTypes[idx].map(cellType => {
-            return responseBySpecies[experimentAccession][markerGene][cellType]
+        experimentAccessions.map((experimentAccession) =>
+          cellTypes.map(cellType => {
+            return (responseBySpecies[experimentAccession]).markerGeneExpression[markerGene][cellType]
           })
         )
       )
@@ -92,18 +93,17 @@ class CellTypeView extends React.Component {
     return heatmapData
   }
 
-  _heatmapAxis(markerGenesBySpecies, responseBySpecies) {
+  _heatmapAxis(markerGenesBySpecies, responseBySpecies, technologyType) {
     const experimentAccessions = Object.keys(responseBySpecies)
-
-    const cellTypes = experimentAccessions.map(accession =>
-      Object.keys(responseBySpecies[accession][Object.keys(responseBySpecies[accession])[0]])
-    )
+    const cellType = Object.keys(Object.values((Object.values(responseBySpecies)[0]).markerGeneExpression)[0])[0]
 
     const yAxisCategory = _.flatMap(
       experimentAccessions.map((experimentAccession, idx) =>
-        cellTypes[idx].map(
-          cellType => `${cellType} <br> ${experimentAccession}`
-        )
+        ({
+          cellType: cellType.substring(1, cellType.length - 1),
+          experimentAccession: experimentAccession,
+          technologyType: technologyType[idx][0]
+        })
       )
     )
     return ({ y: markerGenesBySpecies, x: yAxisCategory })
@@ -131,7 +131,7 @@ class CellTypeView extends React.Component {
 
   render() {
     const { axisData, hasError, isLoading, filteredData } = this.state
-    const { wrapperClassName, plotWrapperClassName } = this.props
+    const { wrapperClassName, plotWrapperClassName, species } = this.props
     const { hasDynamicHeight, defaultHeatmapHeight, heatmapRowHeight } = this.props
 
     return (
@@ -141,6 +141,7 @@ class CellTypeView extends React.Component {
         <div className={wrapperClassName}>
           <div className={plotWrapperClassName} style={{position: `relative`}}>
             <CellTypeHighchartsHeatmap
+              species={{species}}
               axisData={axisData}
               heatmapData={filteredData}
               chartHeight={defaultHeatmapHeight}
@@ -151,6 +152,7 @@ class CellTypeView extends React.Component {
               show={isLoading}
             />
           </div>
+          <DataSeriesHeatmapLegent />
         </div>
     )
   }
@@ -168,7 +170,7 @@ CellTypeView.propTypes = {
 }
 
 CellTypeView.defaultProps = {
-  wrapperClassName: `row`,
+  wrapperClassName: `small-8 columns row`,
   plotWrapperClassName: `small-12 columns`,
   defaultHeatmapHeight: 300,
   hasDynamicHeight: true,

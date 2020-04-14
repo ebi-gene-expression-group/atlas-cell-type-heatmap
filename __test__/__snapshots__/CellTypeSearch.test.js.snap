@@ -1,0 +1,276 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CellTypeSearch with no explicit props matches snapshot 1`] = `
+<div>
+  <div
+    className="row expanded"
+  >
+    <div
+      className="small-12 medium-5 columns"
+    >
+      <label>
+        Species:
+      </label>
+      <div
+        className=" css-2b097c-container"
+        onKeyDown={[Function]}
+      >
+        <div
+          className=" css-15r8ym2-Control"
+          onMouseDown={[Function]}
+          onTouchEnd={[Function]}
+        >
+          <div
+            className=" css-1hwfws3"
+          >
+            <div
+              className=" css-1uccc91-singleValue"
+            >
+              Homo sapiens
+            </div>
+            <div
+              className="css-b8ldur-Input"
+            >
+              <div
+                className=""
+                style={
+                  Object {
+                    "display": "inline-block",
+                  }
+                }
+              >
+                <input
+                  aria-autocomplete="list"
+                  autoCapitalize="none"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  disabled={false}
+                  id="react-select-4-input"
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  onFocus={[Function]}
+                  spellCheck="false"
+                  style={
+                    Object {
+                      "background": 0,
+                      "border": 0,
+                      "boxSizing": "content-box",
+                      "color": "inherit",
+                      "fontSize": "inherit",
+                      "label": "input",
+                      "opacity": 1,
+                      "outline": 0,
+                      "padding": 0,
+                      "width": "1px",
+                    }
+                  }
+                  tabIndex="0"
+                  type="text"
+                  value=""
+                />
+                <div
+                  style={
+                    Object {
+                      "height": 0,
+                      "left": 0,
+                      "overflow": "scroll",
+                      "position": "absolute",
+                      "top": 0,
+                      "visibility": "hidden",
+                      "whiteSpace": "pre",
+                    }
+                  }
+                >
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            className=" css-1hb7zxy-IndicatorsContainer"
+          >
+            <span
+              className="sc-gzVnrw coZbQ"
+              cx={[Function]}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="small-12 medium-5 columns"
+    >
+      <label>
+        Inferred cell types:
+      </label>
+      <div
+        className=" css-2b097c-container"
+        onKeyDown={[Function]}
+      >
+        <div
+          className=" css-15r8ym2-Control"
+          onMouseDown={[Function]}
+          onTouchEnd={[Function]}
+        >
+          <div
+            className=" css-1hwfws3"
+          >
+            <div
+              className=" css-1uccc91-singleValue"
+            >
+              beta cell
+            </div>
+            <div
+              className="css-b8ldur-Input"
+            >
+              <div
+                className=""
+                style={
+                  Object {
+                    "display": "inline-block",
+                  }
+                }
+              >
+                <input
+                  aria-autocomplete="list"
+                  autoCapitalize="none"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  disabled={false}
+                  id="react-select-5-input"
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  onFocus={[Function]}
+                  spellCheck="false"
+                  style={
+                    Object {
+                      "background": 0,
+                      "border": 0,
+                      "boxSizing": "content-box",
+                      "color": "inherit",
+                      "fontSize": "inherit",
+                      "label": "input",
+                      "opacity": 1,
+                      "outline": 0,
+                      "padding": 0,
+                      "width": "1px",
+                    }
+                  }
+                  tabIndex="0"
+                  type="text"
+                  value=""
+                />
+                <div
+                  style={
+                    Object {
+                      "height": 0,
+                      "left": 0,
+                      "overflow": "scroll",
+                      "position": "absolute",
+                      "top": 0,
+                      "visibility": "hidden",
+                      "whiteSpace": "pre",
+                    }
+                  }
+                >
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            className=" css-1hb7zxy-IndicatorsContainer"
+          >
+            <span
+              className="sc-gzVnrw coZbQ"
+              cx={[Function]}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="small-12 medium-2 columns"
+      style={
+        Object {
+          "paddingTop": "25px",
+        }
+      }
+    >
+      <button
+        className="button"
+        onClick={[Function]}
+      >
+        Search
+      </button>
+    </div>
+  </div>
+  <div
+    style={
+      Object {
+        "paddingBottom": "25px",
+      }
+    }
+  >
+    <div
+      className="row"
+    >
+      <div
+        className="columns large-9 large-centered"
+      >
+        <div
+          className="callout alert small"
+        >
+          <h5>
+            Oops!
+          </h5>
+          <p>
+            There was a problem rendering this component.
+            <br />
+            If the error persists, in order to help us debug the issue, please copy the URL and this message and send it to us via 
+            <a
+              href="https://www.ebi.ac.uk/support/gxasc"
+            >
+              the EBI Support & Feedback system
+            </a>
+            :
+          </p>
+          <code>
+            TypeError: Cannot read property 'nodeName' of null – [object Object]
+          </code>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    style={
+      Object {
+        "alignItems": "center",
+        "background": "rgba(255,255,255,0.8)",
+        "bottom": 0,
+        "display": "none",
+        "justifyContent": "center",
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+  >
+    <div
+      style={
+        Object {
+          "textAlign": "center",
+        }
+      }
+    >
+      <p>
+        Loading, please wait...
+      </p>
+      <img
+        src="test-file-stub"
+      />
+    </div>
+  </div>
+</div>
+`;

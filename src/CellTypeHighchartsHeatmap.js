@@ -7,6 +7,7 @@ import HC_heatmap from "highcharts/modules/heatmap"
 import HighchartsExporting from 'highcharts/modules/exporting'
 import HighchartsExportData from 'highcharts/modules/export-data'
 
+import {XAxisFormatter, YAxisFormatter} from './axesFormatters'
 // init the module
 async function addModules() {
   HC_heatmap(Highcharts)
@@ -31,17 +32,23 @@ Highcharts.SVGRenderer.prototype.symbols.download = (x, y, w, h) => [
   `L`, x + w, y + h * 0.9
 ]
 
+const colour = (value) => value < 10 ? `#8cc6ff` : value < 1000 ? `#0000ff` : `#0000b3`
+
 const CellTypeHighchartsHeatmap = props => {
-  const { chartHeight, hasDynamicHeight, heatmapRowHeight, axisData, heatmapData } = props
+  const { chartHeight, hasDynamicHeight, heatmapRowHeight, axisData, heatmapData, species } = props
+  const plotLines = []
 
   let matrixData = []
   let i=0, j=0
   if(axisData.x && heatmapData) {
     while(i < axisData.x.length){
       while(j < axisData.y.length){
-        if(heatmapData[j][i] === 0) {matrixData.push([i,j,null])}
-        else if(heatmapData[j][i]!==undefined){matrixData.push([i, j, Math.floor(heatmapData[j][i] * 1000) / 1000 + 1])}
-        else{matrixData.push([i,j,null])}
+        if (heatmapData[j][i] === 0) {matrixData.push([i,j,null])}
+        else if (heatmapData[j][i] !== undefined) {
+          matrixData.push([i, j, Math.floor(heatmapData[j][i] * 1000) / 1000 + 1])
+        }
+
+        else {matrixData.push([i,j,null])}
         j++
       }
       i++
@@ -49,15 +56,73 @@ const CellTypeHighchartsHeatmap = props => {
     }
   }
 
+  // We don't need to worry about plotlines and labels if the heatmap is showing data filtered by cluster ID
+  if(axisData.y) {
+    let plotLineAxisPosition = -0.5
+
+    // If we don't have a set row height, we try to estimate the height as worked out by Highcharts
+    let rowHeight = hasDynamicHeight ?
+      heatmapRowHeight :
+      Math.round((chartHeight - 175) / axisData.y.length + ((axisData.x.length-1) * 8))
+
+    axisData.x.forEach((experimentAccession, idx, array) => {
+      let numberOfRows = 30 // how many marker genes per cluster
+
+      plotLineAxisPosition = plotLineAxisPosition + numberOfRows
+
+      const yOffset = -numberOfRows * rowHeight/2
+
+      let color, zIndex
+      // don't show last plot line
+      if (idx === array.length-1) {
+        // removing the plot line altogether would remove the label, so we need to make it "invisible"
+        color = `#FFFFFF`
+        zIndex = 0
+      }
+      else {
+        color = `#000000`
+        zIndex = 5
+      }
+
+      plotLines.push({
+        color: color,
+        width: 2,
+        value: plotLineAxisPosition,
+        zIndex: zIndex,
+        label: {
+          text: experimentAccession.experimentAccession,
+          align: `right`,
+          textAlign: `left`,
+          x: 15,
+          y: yOffset,
+          style: {
+            fontWeight: `bold`,
+            fontSize: `12px`
+          }
+        }
+      })
+    })
+  }
+
+  const dataWithColour = matrixData.map(info => [{
+    data: [{x:info[0], y:info[1], value: info[2]}],
+    color: colour(info[2]),
+    borderWidth: 1,
+    borderColor: `white`
+  }][0]
+  )
+
   const options = {
     chart: {
       type: `heatmap`,
       zoomType: `y`,
       height: hasDynamicHeight ? axisData.y && axisData.y.length * heatmapRowHeight : chartHeight,
       animation: false,
-      marginRight: matrixData.length !== 0 ? 100 : 0,
+      marginRight: matrixData.length !== 0 ? 150 : 0,
       plotBackgroundColor: `#eaeaea`,
-      spacingBottom: 0
+      spacingBottom: 0,
+      spacingTop: 0,
+      plotBorderWidth: 1,
     },
     lang: {
       noData: `There are no marker genes for this k value. Try selecting another k.`,
@@ -72,6 +137,25 @@ const CellTypeHighchartsHeatmap = props => {
     credits: {
       enabled: false
     },
+    plotOptions: {
+      heatmap: {
+        turboThreshold: 0
+      },
+
+      series: {
+        states: {
+          hover: {
+            color: `#eeec38` //#edab12 color cell on mouse over
+          },
+          select: {
+            color: `#eeec38`
+          },
+          inactive: {
+            opacity: 1
+          }
+        }
+      }
+    },
     labels: {
       step: 1
     },
@@ -82,15 +166,25 @@ const CellTypeHighchartsHeatmap = props => {
         fontWeight: `bold`
       }
     },
+    legend: {
+      enabled: false
+    },
 
     xAxis: {
+      useHTML: true,
       categories: axisData.x,
       opposite: true,
       labels: {
-        autoRotation: [-90]}
+        useHTML: true,
+        autoRotation: [-90],
+        formatter: function() {
+          return XAxisFormatter(this.value)
+        }
+      }
     },
 
     yAxis: {
+      useHTML: true,
       categories: axisData.y,
       credits: {
         enabled: false
@@ -99,66 +193,44 @@ const CellTypeHighchartsHeatmap = props => {
       reversed: true,
       startOnTick: false,
       endOnTick: false,
-      gridLineWidth: 0,
-      minorGridLineWidth: 0,
-      showEmpty: false
+      showEmpty: false,
+      plotLines: plotLines,
+      labels: {
+        useHTML: true,
+        autoRotation: [-90],
+        formatter: function() {
+          return YAxisFormatter(species, this.value)
+        }
+      }
     },
 
     tooltip: {
+      outside: true,
+      followPointer: false,
       formatter: function () {
         if(this.point.value === null) {
-          return `<b>Cell Type:</b> ${this.series.xAxis.categories[this.point.x]} <br/> 
+          return `<b>Cell Type:</b> ${this.series.xAxis.categories[this.point.x].cellType} <br/> 
+                  <b>Experiment Accession:</b> ${this.series.xAxis.categories[this.point.x].experimentAccession} <br/> 
                   <b>Gene ID:</b> ${this.series.yAxis.categories[this.point.y]} <br /> 
                   <b>Average expression:</b> Not expressed <br/>`
         }
         else {
-          return `<b>Cell Type:</b> ${this.series.xAxis.categories[this.point.x]} <br/> 
+          return `<b>Cell Type:</b> ${this.series.xAxis.categories[this.point.x].cellType} <br/> 
+                  <b>Experiment Accession:</b> ${this.series.xAxis.categories[this.point.x].experimentAccession} <br/> 
                   <b>Gene ID:</b> ${this.series.yAxis.categories[this.point.y]} <br /> 
                   <b>Average expression:</b> ${Math.round(this.point.value-1)} CPM <br/>`
+        }
+      },
+      positioner: function (labelWidth, labelHeight, point) {
+        return {
+          x: point.plotX + 10,
+          y: point.plotY + labelHeight/2 + 200
         }
       }
     },
 
-    colorAxis: {
-      type: `logarithmic`,
-      min: 0.1,
-      max: 100000,
-      stops: [
-        [0, `#ffffff`],
-        [0.67, `#6077bf`],
-        [1, `#0e0573`]
-      ],
-      marker: {
-        color: `#e96b23`
-      }
-    },
+    series: dataWithColour,
 
-    legend: {
-      title: {
-        text: `Average expression (CPM)`
-      },
-      align: `center`,
-      verticalAlign: `top`,
-      layout: `horizontal`,
-      symbolWidth: 480,
-      enabled: matrixData.length !== 0
-    },
-
-    series: [
-      {
-        data: matrixData,
-        nullColor: `#eaeaea`,
-        cursor: `crosshair`,
-        states: {
-          hover: {
-            brightness: 0,
-            borderWidth: 2,
-            borderColor: `#e96b23`
-          }
-        },
-        turboThreshold: 0
-      }
-    ],
     boost: {
       useGPUTranslations: true
     },
@@ -208,6 +280,7 @@ const CellTypeHighchartsHeatmap = props => {
 }
 
 CellTypeHighchartsHeatmap.propTypes = {
+  species: PropTypes.string.isRequired,
   chartHeight: PropTypes.number.isRequired,
   hasDynamicHeight: PropTypes.bool.isRequired,
   heatmapRowHeight: PropTypes.number.isRequired,

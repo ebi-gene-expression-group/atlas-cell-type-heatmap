@@ -42,9 +42,11 @@
     searchRouter.render({
         resource: `json/metadata-search/expression/name/inferred_cell_type/value/`,
         host: `http://localhost:8080/gxa/sc/`,
-        speciesList: [`Homo sapiens`],
-        cellTypePayload: {"Homo sapiens":{"E-MTAB-5061":["[beta cell]","[not available]","[pancreatic A cell]","[pancreatic PP cell]","[pancreatic ductal cell]","[endothelial cell]","[not applicable]","[mast cell]","[acinar cell]","[pancreatic stellate cell]","[pancreatic D cell]","[antigen presenting-MHC class II]","[pancreatic epsilon cell]"]}}
-    }, 'target', 'target2');
+        speciesList: [`Homo sapiens`, `Mus musculus`],
+        cellTypePayload:
+            {"Homo sapiens":{"E-MTAB-5061":["[beta cell]","[not available]","[pancreatic A cell]","[pancreatic PP cell]","[pancreatic ductal cell]","[endothelial cell]","[not applicable]","[mast cell]","[acinar cell]","[pancreatic stellate cell]","[pancreatic D cell]","[antigen presenting-MHC class II]","[pancreatic epsilon cell]"]},
+            "Mus musculus":{"E-EHCA-2":["[B cell]","[cancer associated fibroblast]","[CD31-positive endothelial cell]","[CD11b-positive CD11c-positive dendritic cell]","[CD8-positive T cell]","[CD11b-positive macrophage/monocyte]","[innate lymphoid cell]","[CD11c-positive dendritic cell]","[CD4-positive T cell]"]}}},
+        'target', 'target2');
 </script>
 
 </html>
